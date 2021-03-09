@@ -1,0 +1,2 @@
+# rust-apps
+Rust application
