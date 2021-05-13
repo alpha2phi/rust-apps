@@ -1,20 +1,55 @@
 version: "3"
+services:
+  pulsar:
+    image: apachepulsar/pulsar:latest
+    command: bin/pulsar standalone
+    hostname: pulsar
+    ports:
+      - "8080:8080"
+      - "6650:6650"
+    restart: always
+    volumes:
+      - "./data/:/pulsar/data"
+  dashboard:
+    image: apachepulsar/pulsar-manager:v0.2.0
+    ports:
+      - "9527:9527"
+      - "7750:7750"
+    depends_on:
+      - pulsar
+    links:
+      - pulsar
+    environment:
+      SPRING_CONFIGURATION_FILE: /pulsar-manager/pulsar-manager/application.properties
+
+
+version: "3"
 
 services:
   pulsar:
     build: pulsar
     restart: always
     ports:
-      - 8088:8088
-      - 5678:5678
+      - 6650:6650
+      - 8080:8080
     networks:
       - app_network
     container_name: pulsar
     env_file:
       - .env
     volumes:
-      - ./data:/data
-      - ./backend:/fastapi
+      - pulsardata:/pulsar/data
+      - pulsarconf:/pulsar/conf
+
+  pulsar-manager:
+    build: pulsar-manager
+    restart: always
+    ports:
+      - 6650:6650
+      - 8080:8080
+    networks:
+      - app_network
+    container_name: pulsar-manager
 
   # frontend:
   #   build: frontend
@@ -37,6 +72,8 @@ networks:
   app_network:
     driver: bridge
 
-# volumes:
-#   data:
-#     name: data
+volumes:
+  pulsardata:
+    name: pulsardata
+  pulsarconf:
+    name: pulsarconf
