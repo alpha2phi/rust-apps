@@ -1,9 +1,13 @@
 version: "3"
+
 services:
   pulsar:
     image: apachepulsar/pulsar:latest
     command: bin/pulsar standalone
+    container_name: pulsar
     hostname: pulsar
+    networks:
+      - app_network
     ports:
       - "8080:8080"
       - "6650:6650"
@@ -11,7 +15,10 @@ services:
     volumes:
       - "./data/:/pulsar/data"
   dashboard:
-    image: apachepulsar/pulsar-manager:v0.2.0
+    image: apachepulsar/pulsar-manager:latest
+    container_name: dashboard
+    networks:
+      - app_network
     ports:
       - "9527:9527"
       - "7750:7750"
@@ -22,58 +29,10 @@ services:
     environment:
       SPRING_CONFIGURATION_FILE: /pulsar-manager/pulsar-manager/application.properties
 
-
-version: "3"
-
-services:
-  pulsar:
-    build: pulsar
-    restart: always
-    ports:
-      - 6650:6650
-      - 8080:8080
-    networks:
-      - app_network
-    container_name: pulsar
-    env_file:
-      - .env
-    volumes:
-      - pulsardata:/pulsar/data
-      - pulsarconf:/pulsar/conf
-
-  pulsar-manager:
-    build: pulsar-manager
-    restart: always
-    ports:
-      - 6650:6650
-      - 8080:8080
-    networks:
-      - app_network
-    container_name: pulsar-manager
-
-  # frontend:
-  #   build: frontend
-  #   restart: always
-  #   depends_on:
-  #     - backend
-  #   ports:
-  #     - 3000:3000
-  #   networks:
-  #     - app_network
-  #   container_name: frontend
-  #   env_file:
-  #     - .env
-  #   volumes:
-  #     - ./data:/data
-  #     - ./frontend:/app
-  #     - /app/node_modules
-
 networks:
   app_network:
     driver: bridge
 
 volumes:
-  pulsardata:
-    name: pulsardata
-  pulsarconf:
-    name: pulsarconf
+  data:
+    name: data
