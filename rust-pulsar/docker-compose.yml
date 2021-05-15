@@ -4,35 +4,23 @@ services:
   pulsar:
     image: apachepulsar/pulsar:latest
     command: bin/pulsar standalone
-    container_name: pulsar
     hostname: pulsar
-    networks:
-      - app_network
+    container_name: pulsar
     ports:
       - "8080:8080"
       - "6650:6650"
     restart: always
     volumes:
-      - "./data/:/pulsar/data"
+      - "./data:/pulsar/data"
   dashboard:
     image: apachepulsar/pulsar-manager:latest
-    container_name: dashboard
-    networks:
-      - app_network
     ports:
       - "9527:9527"
       - "7750:7750"
+    container_name: dashboard
     depends_on:
       - pulsar
     links:
       - pulsar
     environment:
       SPRING_CONFIGURATION_FILE: /pulsar-manager/pulsar-manager/application.properties
-
-networks:
-  app_network:
-    driver: bridge
-
-volumes:
-  data:
-    name: data
