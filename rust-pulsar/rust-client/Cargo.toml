@@ -1,0 +1,27 @@
+[package]
+name = "rust-client"
+version = "0.1.0"
+authors = ["alpha2phi <alpha2phi@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+futures = "0.3"
+pulsar = "2.0"
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+env_logger = "0.8.3"
+serde_json = "1.0.64"
+log = "0.4.14"
+
+[[bin]]
+name = "consumer"
+path = "src/consumer/main.rs"
+
+[[bin]]
+name = "producer"
+path = "src/producer/main.rs"
+
+[profile.dev]
+split-debuginfo = "unpacked"
